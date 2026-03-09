@@ -1,3 +1,9 @@
-
 4
-Oumaima 3 3
+##start
+R1 3 0
+R2 34 7
+R3 9 0
+##end
+R5 2 4
+R1-R2
+R4-R5
