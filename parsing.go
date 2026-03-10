@@ -32,10 +32,11 @@ func Parsing(content string) (string, bool) {
 
 	lines := strings.Split(content, "\r\n")
 
+	//START . END :
 	countStart := 0
 	countEnd := 0
-	for k := 0; k < len(lines)-1; k++ {
-		line := strings.TrimSpace(lines[k])
+	for a := 0; a < len(lines)-1; a++ {
+		line := strings.TrimSpace(lines[a])
 		if line == "##start" {
 			countStart++
 		}
@@ -44,24 +45,18 @@ func Parsing(content string) (string, bool) {
 		}
 	}
 	if countStart != 1 || countEnd != 1 {
-		return "Two Tags  Start or End", false
+		return "ERROR: invalid data format, Problem with ##start or ##end tag", false
 	}
-	if countStart == 0 || countEnd == 0 {
-		return "NoT Start || End Tag", false
-	}
+	//----------------------------------------------------
 
-	//Check a number of Ants :
-	for i := 0; i < len(lines)-1; i++ {
-		line := strings.TrimSpace(lines[i])
-		//empty line
-		if line == "" {
-			continue
+	//NUMBER OF ANTS :
+	for n := 0; n < len(lines)-1; n++ {
+		line := strings.TrimSpace(lines[n])
+
+		if line == "##start" || line == "##end" {
+			return "ERROR: invalid data format, ##start or ##end tag appears before the number of ants", false
 		}
-		//Comment
-		if line[0] == '#' {
-			if line == "##start" || line == "##end" {
-				return "ERROR: invalid data format, Tag Start/End before Number of Ants", false
-			}
+		if line == "" || line[0] == '#' {
 			continue
 		}
 		numberAnts, er := strconv.Atoi(line)
@@ -69,33 +64,21 @@ func Parsing(content string) (string, bool) {
 			return "ERROR: invalid data format, , invalid number of Ants", false
 		}
 		colony.numberAnts = numberAnts
-		lines = lines[i+1:]
+		lines = lines[n+1:]
 		break
 	}
 
-	//------------------------------------------//
-
+	//---------------------------------------------------------------
+	//ROOMS:
 	roomRegex := "^[a-zA-Z0-9]+ [0-9]+ [0-9]+$"
 	linkRegex := "^[a-zA-Z0-9]+-[a-zA-Z0-9]+$"
 
+	index := 0
 	for j := 0; j < len(lines); j++ {
 		line := strings.TrimSpace(lines[j])
 
-		if line == "" {
-			continue
-		}
-
-		if line[0] == '#' && line[1:]!= "#start" && line[1:] != "#end"{
-			continue
-		}
-		matchRoom, _ := regexp.MatchString(roomRegex, line)
-		if !matchRoom {
-			matchLink, _ := regexp.MatchString(linkRegex, line)
-			if !matchLink {
-				return "Error Room", false
-			}
-
-			if j+1 < len(lines)  && (line == "##start" || line == "##end"){
+		if line == "##start" || line == "##end" {
+			if j+1 < len(lines) {
 				check, _ := regexp.MatchString(roomRegex, lines[j+1])
 				if check {
 					r := strings.Split(lines[j+1], " ")
@@ -105,29 +88,92 @@ func Parsing(content string) (string, bool) {
 					if line == "##end" {
 						colony.end = r[0]
 					}
-				}else{
-					return "No room for Start/End", false
+					continue
+				} else {
+					return "ERROR: invalid data format, no room defined for #start or #end", false
 				}
+			} else {
+				return "ERROR: invalid data format, no room defined for #start or #end", false
 
 			}
-			//"The rooms => Selections"
+
+		}
+		if line == "" || line[0] == '#' {
+			continue
+		}
+		if line[0] == '#' || line[0] == 'L' {
+			return "ERROR: invalid data format, this is begin with L or #", false
+		}
+		matchLink, _ := regexp.MatchString(linkRegex, line)
+		if matchLink {
+			index = j 
 			break
 		}
-		r := strings.Split(line, " ")
-		coorX, _ := strconv.Atoi(r[1])
-		coorY, _ := strconv.Atoi(r[2])
-		room = Room{r[0], coorX, coorY}
-
-		for _, r := range colony.rooms {
-			if room.name == r.name || (room.x == r.x && room.y == r.y) {
-				return "this room is double coord or name ", false
-			}
+		matchRoom, _ := regexp.MatchString(roomRegex, line)
+		if !matchRoom {
+			return "ERROR: invalid data format, invalid room", false
 		}
 
+		r := strings.Split(line, " ")
+		name := r[0]
+		coorX, _ := strconv.Atoi(r[1])
+		coorY, _ := strconv.Atoi(r[2])
+
+		for _, r := range colony.rooms {
+			if r.name == name || (r.x == coorX && r.y == coorY) {
+				return "ERROR: invalid data format, room name or coordinates already exist", false
+			}
+		}
+		room = Room{name, coorX, coorY}
 		colony.rooms = append(colony.rooms, room)
 	}
+	//--------------------------------------------------------------------
+	//LINKS
+	lines = lines[index:]
 
-	fmt.Println(colony.numberAnts, colony.rooms, colony.start, colony.end)
+	for q := 0; q < len(lines); q++ {
+		line := strings.TrimSpace(lines[q])
+		if line == "##start" || line == "##end" {
+			return "Error: invalid data format,  ##start or ##end tag appears in Links part", false
+		}
+		if line == "" || line[0] == '#' {
+			continue
+		}
+		matchLink, _ := regexp.MatchString(linkRegex, line)
+		if !matchLink {
+			return "ERROR: invalid data format, invalid link", false
+		}
+		l := strings.Split(line, "-")
+
+		R1 := l[0]
+		R2 := l[1]
+
+		// check rooms exist
+		roomR1 := false
+		roomR2 := false
+		for _, r := range colony.rooms {
+			if r.name == R1 {
+				roomR1 = true
+			}
+			if r.name == R2 {
+				roomR2 = true
+			}
+		}
+		if !roomR1 || !roomR2 {
+			return "ERROR: invalid data format, invalid link room does not exist", false
+		}
+
+		// check duplicate link (R1-R2 or R2-R1)
+		for _, lnk := range colony.links {
+			if (lnk.room1 == R1 && lnk.room2 == R2) || (lnk.room1 == R2 && lnk.room2 == R1) {
+				return "ERROR: invalid data format, duplicate link", false
+			}
+		}
+		colony.links = append(colony.links, Link{R1, R2})
+
+	}
+
+	fmt.Println(colony.numberAnts, colony.rooms, colony.start, colony.end, colony.links)
 
 	return "", true
 }

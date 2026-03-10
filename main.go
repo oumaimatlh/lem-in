@@ -27,5 +27,6 @@ func main() {
 		fmt.Println(Edited)
 		return
 	}
+
 	Lemin(Edited)
 }
