@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	//"fmt"
 	"regexp"
 	"strconv"
 	"strings"
@@ -27,6 +27,7 @@ type Link struct {
 var colony AntsFarm
 var room Room
 var link Link
+
 
 func Parsing(content string) (string, bool) {
 
@@ -166,14 +167,16 @@ func Parsing(content string) (string, bool) {
 		// check duplicate link (R1-R2 or R2-R1)
 		for _, lnk := range colony.links {
 			if (lnk.room1 == R1 && lnk.room2 == R2) || (lnk.room1 == R2 && lnk.room2 == R1) {
-				return "ERROR: invalid data format, duplicate link", false
+				return "ERROR: duplicate link", false
 			}
 		}
+
+		// si pas d'erreur → continuer le parsing
 		colony.links = append(colony.links, Link{R1, R2})
 
 	}
 
-	fmt.Println(colony.numberAnts, colony.rooms, colony.start, colony.end, colony.links)
+	// fmt.Println(colony.numberAnts, colony.rooms, colony.start, colony.end, colony.links)
 
 	return "", true
 }

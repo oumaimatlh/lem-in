@@ -28,5 +28,5 @@ func main() {
 		return
 	}
 
-	Lemin(Edited)
+	Graph()
 }
