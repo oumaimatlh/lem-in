@@ -10,43 +10,53 @@ var paths [][]string
 func Lemin() {
 	paths = [][]string{}
 
-	for _, link := range graph[colony.start] {
-		path := []string{colony.start, link}
-		check := []string{colony.start, link}
-		LoopCheckPaths(link, path, check)
+	for _, edge := range graph[colony.start] {
+		path := []string{colony.start, edge}
+		check := []string{colony.start, edge}
+		LoopCheckPaths(edge, path, check)
 	}
 
 	if len(paths) == 0 {
 		fmt.Println("ERROR: invalid data format, no path between start and end")
 		return
 	}
-	// // Je veux ordrer les paths  selon distance
+// // Je veux ordrer les paths  selon distance
+	for i := 0; i < len(paths); i++ {
+		m := paths[i]
+		for j := i+1; j < len(paths); j++{
+			if len(paths[i]) > len(paths[j]){
+				paths[i]=paths[j]; paths[j]=m
+				m = paths[i]
+			}
+		}
+		
+	}
 
-	fmt.Println(paths)
+//Maintenant on doit Chercher meilleur Solution afin dim le nombre de Tours 
 
 }
 
 func LoopCheckPaths(node string, path []string, check []string) {
 	//Backtracking / Récursivité
 	if node == colony.end {
-		newPath := make([]string, len(path))
-		copy(newPath, path)
-		paths = append(paths, newPath)
+		nvPath := make([]string, len(path))
+		copy(nvPath, path)
+		paths = append(paths, nvPath)
 		return
 	}
 
-	for _, l := range graph[node] {
-		if slices.Contains(check, l) {
+	for _, edge := range graph[node] {
+		if slices.Contains(check, edge) {
 			continue
 		}
-		newPath := make([]string, len(path)+1)
-		copy(newPath, path)
-		newPath[len(path)] = l
+		nvPath := make([]string, len(path)+1)
+		copy(nvPath, path)
+		nvPath[len(path)] = edge
 
-		newCheck := make([]string, len(check)+1)
-		copy(newCheck, check)
-		newCheck[len(check)] = l
+		nvCheck := make([]string, len(check)+1)
+		copy(nvCheck, check)
+		nvCheck[len(check)] = edge
 
-		LoopCheckPaths(l, newPath, newCheck)
+		LoopCheckPaths(edge, nvPath, nvCheck)
 	}
 }
