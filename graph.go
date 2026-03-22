@@ -1,9 +1,5 @@
 package main
 
-import "fmt"
-
-// import "fmt"
-
 var graph map[string][]string
 
 func Graph() {
@@ -22,7 +18,6 @@ func Graph() {
 			}
 		}
 	}
-	fmt.Println(graph)
 	Lemin()
 
 }
