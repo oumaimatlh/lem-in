@@ -1,4 +1,4 @@
-package main
+package lemin
 
 import (
 	//"fmt"
@@ -24,16 +24,17 @@ type Link struct {
 	room2 string
 }
 
-var colony AntsFarm
-var room Room
-var link Link
-
+var (
+	colony AntsFarm
+	room   Room
+	link   Link
+)
 
 func Parsing(content string) (string, bool) {
-
-	lines := strings.Split(content, "\r\n")
-
-	//START . END :
+	content = strings.ReplaceAll(content, "\r\n", "\n")
+	content = strings.ReplaceAll(content, "\r", "\n")
+	lines := strings.Split(content, "\n")
+	// START . END :
 	countStart := 0
 	countEnd := 0
 	for a := 0; a < len(lines)-1; a++ {
@@ -50,7 +51,7 @@ func Parsing(content string) (string, bool) {
 	}
 	//----------------------------------------------------
 
-	//NUMBER OF ANTS :
+	// NUMBER OF ANTS :
 	for n := 0; n < len(lines)-1; n++ {
 		line := strings.TrimSpace(lines[n])
 
@@ -71,8 +72,8 @@ func Parsing(content string) (string, bool) {
 
 	//---------------------------------------------------------------
 	//ROOMS:
-	roomRegex := "^[a-zA-Z0-9]+ [0-9]+ [0-9]+$"
-	linkRegex := "^[a-zA-Z0-9]+-[a-zA-Z0-9]+$"
+	roomRegex := "^[^-\\s][^-]* [0-9]+ [0-9]+$"
+	linkRegex := "^[^-]+-[^-]+$"
 
 	index := 0
 	for j := 0; j < len(lines); j++ {
@@ -95,9 +96,7 @@ func Parsing(content string) (string, bool) {
 				}
 			} else {
 				return "ERROR: invalid data format, no room defined for #start or #end", false
-
 			}
-
 		}
 		if line == "" || line[0] == '#' {
 			continue
@@ -107,7 +106,7 @@ func Parsing(content string) (string, bool) {
 		}
 		matchLink, _ := regexp.MatchString(linkRegex, line)
 		if matchLink {
-			index = j 
+			index = j
 			break
 		}
 		matchRoom, _ := regexp.MatchString(roomRegex, line)

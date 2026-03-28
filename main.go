@@ -3,30 +3,37 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
+
+	lemin "LEM-IN/Lemin"
 )
 
 func main() {
-	args := os.Args
-
-	if len(args) != 2 {
-		fmt.Println("Error in Args")
-		return 
+	if len(os.Args) != 2 {
+		fmt.Println("Usage: go run . <filename>")
+		return
 	}
 
-	file := args[1]
-	content, err := os.ReadFile(file)
-
+	data, err := os.ReadFile(os.Args[1])
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("ERROR: cannot read file:", err)
 		return
 	}
 
-	Edited, er := Parsing(string(content))
+	content := string(data)
 
-	if !er{
-		fmt.Println(Edited)
+	errMsg, ok := lemin.Parsing(content)
+	if !ok {
+		fmt.Println(errMsg)
 		return
 	}
 
-	Graph()
+	// Print file content as required by the spec
+	lines := strings.Split(strings.TrimRight(content, "\r\n"), "\n")
+	for _, line := range lines {
+		fmt.Println(strings.TrimRight(line, "\r"))
+	}
+	fmt.Println()
+
+	lemin.Graph()
 }
