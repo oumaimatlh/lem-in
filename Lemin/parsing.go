@@ -175,7 +175,5 @@ func Parsing(content string) (string, bool) {
 
 	}
 
-	// fmt.Println(colony.numberAnts, colony.rooms, colony.start, colony.end, colony.links)
-
 	return "", true
 }

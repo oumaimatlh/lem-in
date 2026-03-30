@@ -79,7 +79,7 @@ func SimulateTurns(paths [][]string, numAnts int) {
 			isEnd := firstRoom == colony.end
 
 			if !isEnd && occupied[firstRoom] {
-				continue // entry blocked this turn
+				continue
 			}
 
 			id := queues[pi][qPtr[pi]]
