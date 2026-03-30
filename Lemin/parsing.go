@@ -32,7 +32,7 @@ var (
 
 func Parsing(content string) (string, bool) {
 	content = strings.ReplaceAll(content, "\r\n", "\n")
-	content = strings.ReplaceAll(content, "\r", "\n")
+	//content = strings.ReplaceAll(content, "\r", "\n")
 	lines := strings.Split(content, "\n")
 	// START . END :
 	countStart := 0

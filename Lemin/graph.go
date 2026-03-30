@@ -1,17 +1,10 @@
 package lemin
 
-import "fmt"
 
 var graph map[string][]string
 
 func Graph() {
 	graph = map[string][]string{}
-
-	// Vérifier que start et end sont définis
-	if colony.start == "" || colony.end == "" {
-		fmt.Println("ERROR: invalid data format, start or end not defined")
-		return
-	}
 
 	for _, r := range colony.rooms {
 		for _, l := range colony.links {

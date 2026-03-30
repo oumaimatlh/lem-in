@@ -27,13 +27,11 @@ func main() {
 		fmt.Println(errMsg)
 		return
 	}
-
-	// Print file content as required by the spec
 	lines := strings.Split(strings.TrimRight(content, "\r\n"), "\n")
 	for _, line := range lines {
-		fmt.Println(strings.TrimRight(line, "\r"))
+		fmt.Println(line)
 	}
+	
 	fmt.Println()
-
 	lemin.Graph()
 }

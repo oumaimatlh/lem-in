@@ -45,9 +45,7 @@ func Lemin() {
 }
 
 func FindFirstPathBFS(start, end string) []string {
-	if start == end {
-		return []string{start}
-	}
+
 	queue := [][]string{{start}}
 	visited := map[string]bool{start: true}
 
