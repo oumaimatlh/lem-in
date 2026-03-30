@@ -27,11 +27,12 @@ func main() {
 		fmt.Println(errMsg)
 		return
 	}
+
 	lines := strings.Split(strings.TrimRight(content, "\r\n"), "\n")
 	for _, line := range lines {
-		fmt.Println(line)
+		fmt.Println(strings.TrimRight(line, "\r"))
 	}
-	
 	fmt.Println()
+
 	lemin.Graph()
 }
