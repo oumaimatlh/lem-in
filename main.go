@@ -28,9 +28,14 @@ func main() {
 		return
 	}
 
-	lines := strings.Split(strings.TrimRight(content, "\r\n"), "\n")
+	lines := strings.Split(strings.TrimSpace(content), "\n")
+
 	for _, line := range lines {
-		fmt.Println(strings.TrimRight(line, "\r"))
+		line = strings.TrimSpace(line)
+		if line == "" {
+			continue
+		}
+		fmt.Println(line)
 	}
 	fmt.Println()
 
